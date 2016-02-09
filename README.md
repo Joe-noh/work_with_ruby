@@ -1,20 +1,16 @@
-# WorkWithRuby
+# Port Example
 
-**TODO: Add description**
+Elixir communicates with Ruby.
 
-## Installation
+## Try
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+```
+$ iex -S mix
+```
 
-  1. Add work_with_ruby to your list of dependencies in `mix.exs`:
+```elixir
+# WrokWithRuby.EchoServer starts a ruby process
 
-        def deps do
-          [{:work_with_ruby, "~> 0.0.1"}]
-        end
-
-  2. Ensure work_with_ruby is started before your application:
-
-        def application do
-          [applications: [:work_with_ruby]]
-        end
-
+iex> WorkWithRuby.EchoServer.hello
+{#Port<0.3951>, {:data, "Hello\n"}}  # Response from the ruby process
+```
