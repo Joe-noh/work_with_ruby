@@ -7,7 +7,7 @@ defmodule WorkWithRuby do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(WorkWithRuby.EchoSup, [])
+      worker(WorkWithRuby.EchoServer, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

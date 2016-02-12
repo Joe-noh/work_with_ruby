@@ -1,37 +1,39 @@
 defmodule WorkWithRuby.EchoServer do
+  @moduledoc ~S"""
+  与えられた文字列をRubyプロセスに渡し、そのまま返してもらいます。
+
+      iex> WorkWithRuby.EchoServer.echo("Hello")
+      "Hello\n"
+      iex> WorkWithRuby.EchoServer.echo("こんにちわ")
+      "こんにちわ\n"
+      iex> WorkWithRuby.EchoServer.echo("🍣🍺🍕")
+      "🍣🍺🍕\n"
+  """
+
   use GenServer
 
   def start_link do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def hello do
-    GenServer.call(__MODULE__, {:echo, "Hello\n"})
+  def echo(message) when is_binary(message) do
+    GenServer.call(__MODULE__, {:echo, message <> "\n"})
   end
 
   def init(_) do
-    Process.flag(:trap_exit, true)
-
-    rb_file = Path.join(:code.priv_dir(:work_with_ruby), "echo_server.rb")
-    pid = Port.open({:spawn_executable, rb_file}, [:binary, :stream])
+    rb_file = Path.join(:code.priv_dir(:work_with_ruby), "echo.rb")
+    pid = Port.open({:spawn_executable, rb_file}, [:binary])
 
     {:ok, pid}
   end
 
-  def handle_call({:echo, string}, _from, state) when is_binary(string) do
-    IO.puts "Got \"#{string}\""
+  def handle_call({:echo, message}, _from, pid) when is_binary(message) do
+    Port.command(pid, message)
 
-    Port.command(state, string)
-
-    {:reply, string, state}
-  end
-
-  def handle_info({:EXIT, _, :normal}, state) do
-    {:stop, :ok, state}
-  end
-
-  def handle_info(other, state) do
-    IO.inspect other
-    {:noreply, state}
+    receive do
+      {^pid, {:data, content}} -> {:reply, content, pid}
+    after 3000 ->
+      {:stop, :timeout, pid}
+    end
   end
 end
