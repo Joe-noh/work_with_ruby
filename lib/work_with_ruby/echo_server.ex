@@ -1,15 +1,4 @@
 defmodule WorkWithRuby.EchoServer do
-  @moduledoc ~S"""
-  与えられた文字列をRubyプロセスに渡し、そのまま返してもらいます。
-
-      iex> WorkWithRuby.EchoServer.echo("Hello")
-      "Hello\n"
-      iex> WorkWithRuby.EchoServer.echo("こんにちわ")
-      "こんにちわ\n"
-      iex> WorkWithRuby.EchoServer.echo("🍣🍺🍕")
-      "🍣🍺🍕\n"
-  """
-
   use GenServer
 
   def start_link do
